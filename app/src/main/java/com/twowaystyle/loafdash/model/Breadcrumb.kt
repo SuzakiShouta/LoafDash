@@ -1,19 +1,17 @@
 package com.twowaystyle.loafdash.model
 
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.GeoPoint
+
 data class Breadcrumb(
     val userId: String,
-    val location: Location,
-    val snsProperties: List<SNSProperty>,
+    val location: GeoPoint,
+    val snsProperties: Array<SNSProperty>,
     val profile: String,
-    val createdAt: String
+    val createdAt: Timestamp
 )
 
 data class SNSProperty (
-    val type: String,
-    val id: String
-)
-
-data class Location(
-    val latitude: Double,
-    val longitude: Double
+    val snsType: String,
+    val snsId: String
 )
