@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="99ec18b1-d937-44f2-9f9f-aef03872895d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/db/SharedPreferencesManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/ReadOut.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/ReadOut.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/api/LoafDash.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/api/LoafDash.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/model/Breadcrumb.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/twowaystyle/loafdash/model/Breadcrumb.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-    </list>
+    <list default="true" id="99ec18b1-d937-44f2-9f9f-aef03872895d" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
