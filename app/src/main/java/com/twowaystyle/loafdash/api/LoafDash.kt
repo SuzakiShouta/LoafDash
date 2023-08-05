@@ -35,23 +35,27 @@ class LoafDash(private val app: MainApplication) {
     // 自分の近くのパンくずを取得する
     // 近くのユーザ、かつ、会ってないユーザ
     fun getTargetUser(geoPoint: GeoPoint, pastEncounterUserIds: Array<String>) {
-
-        // 受け取った緯度経度+-0.1以下の範囲を計算
-        val latUpperBound = geoPoint.latitude + 0.1
-        val latLowerBound = geoPoint.latitude - 0.1
-        val longUpperBound = geoPoint.longitude + 0.1
-        val longLowerBound = geoPoint.longitude - 0.1
-
         db.collection(collectionPass)
-            .whereGreaterThan("location", GeoPoint(latLowerBound, longLowerBound)) // 緯度経度の下限
-            .whereLessThan("location", GeoPoint(latUpperBound, longUpperBound)) // 緯度経度の上限
+            .whereNotIn("userId", pastEncounterUserIds.toList()) // userIdで絞り込む
+            .limit(10) // 上位10件のみ取得
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val userIdList = pastEncounterUserIds.toList()
-                // 条件に合致するデータを絞り込む
+                // 受け取った緯度経度+-0.1以下の範囲を計算
+                val latUpperBound = geoPoint.latitude + 0.1
+                val latLowerBound = geoPoint.latitude - 0.1
+                val longUpperBound = geoPoint.longitude + 0.1
+                val longLowerBound = geoPoint.longitude - 0.1
+
+                // 緯度経度でさらに絞り込む
                 val targetBreadcrumbs = querySnapshot.documents.filter { document ->
-                    val userId = document.getString("userId") ?: ""
-                    !userIdList.contains(userId)
+                    val location = document.getGeoPoint("location")
+                    if (location != null) {
+                        val lat = location.latitude
+                        val long = location.longitude
+                        lat in latLowerBound..latUpperBound && long in longLowerBound..longUpperBound
+                    } else {
+                        false
+                    }
                 }
 
                 // Applicationに返すBreadcrumbの配列
@@ -86,15 +90,18 @@ class LoafDash(private val app: MainApplication) {
 
     // 古いドキュメント（FireStoreのカラム）を削除する関数
     fun deleteOldDocuments() {
-        val collectionRef = db.collection(collectionPass)
-        // 現在時刻から24時間前のタイムスタンプを計算
-        val currentTime = Calendar.getInstance().timeInMillis
-        val twentyFourHoursAgo = currentTime - (24 * 60 * 60 * 1000)
 
-        collectionRef
-            .whereLessThan("created_at", twentyFourHoursAgo) // created_atが24時間前よりも前のドキュメントをクエリする
+        // 現在時刻から24時間前のタイムスタンプを計算
+        val currentTime = Timestamp.now()
+        val twentyFourHoursAgo = Timestamp(currentTime.seconds - (24 * 60 * 60), currentTime.nanoseconds)
+
+        db.collection(collectionPass)
+            .whereLessThan("createdAt", twentyFourHoursAgo) // created_atが24時間前よりも前のドキュメントをクエリする
             .get()
             .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot) {
+                    Log.d(LOGNAME, "${document.id} => ${document.data}")
+                }
                 // クエリ結果のドキュメントを順に削除
                 for (document in querySnapshot.documents) {
                     document.reference.delete()

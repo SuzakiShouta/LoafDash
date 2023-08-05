@@ -67,6 +67,7 @@ class MainApplication: Application() {
 
     fun testPost() {
 //        loafDash.postBreadcrumb(TestData.breadcrumb1)
-        loafDash.getTargetUser(GeoPoint(35.1, 135.0), arrayOf("qwer-asdf-zxcv-1234"))
+//        loafDash.getTargetUser(GeoPoint(35.1, 135.0), arrayOf("qwer-asdf-zxcv-1234"))
+//        loafDash.deleteOldDocuments()
     }
 }
