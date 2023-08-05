@@ -19,14 +19,14 @@ class SharedPreferencesManager(private val context: Context) {
         return getString(key, "")
     }
 
-    fun setSNSProperties(snsProperties: Array<SNSProperty>){
+    fun setSNSProperties(snsProperties: List<SNSProperty>){
         val key = "snsProperties"
         saveSNSProperties(key, snsProperties)
     }
 
-    fun getSNSProperties(): Array<SNSProperty> {
+    fun getSNSProperties(): List<SNSProperty> {
         val key = "snsProperties"
-        return getSNSProperties(key, "")
+        return getSNSProperties(key, """[]""")
     }
 
     fun setProfile(profile: String){
@@ -39,24 +39,24 @@ class SharedPreferencesManager(private val context: Context) {
         return getString(key, "")
     }
 
-    fun setKeepUsers(keepUsers: Array<String>) {
-        val key = "keepUsers"
+    fun setKeepUserIds(keepUsers: Array<String>) {
+        val key = "keepUserIds"
         saveStringArray(key, keepUsers)
     }
 
-    fun getKeepUsers(): Array<String> {
-        val key = "keepUsers"
-        return getStringArray(key, arrayOf())
+    fun getKeepUserIds(): Array<String> {
+        val key = "keepUserIds"
+        return getStringArray(key, arrayOf(""))
     }
 
-    fun setPastEncounterUsers(pastEncounterUsers: Array<String>) {
-        val key = "pastEncounterUsers"
+    fun setPastEncounterUserIds(pastEncounterUsers: Array<String>) {
+        val key = "pastEncounterUserIds"
         saveStringArray(key, pastEncounterUsers)
     }
 
-    fun getPastEncounterUsers(): Array<String> {
-        val key = "pastEncounterUsers"
-        return getStringArray(key, arrayOf())
+    fun getPastEncounterUserIds(): Array<String> {
+        val key = "pastEncounterUserIds"
+        return getStringArray(key, arrayOf(""))
     }
 
 
@@ -69,14 +69,14 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     // 一回JSONに変換してStringとして扱う
-    private fun saveSNSProperties(key: String, value: Array<SNSProperty>) {
+    private fun saveSNSProperties(key: String, value: List<SNSProperty>) {
         val jsonString = Gson().toJson(value)
         sharedPreferences.edit().putString(key, jsonString).apply()
     }
 
-    private fun getSNSProperties(key: String, defaultValue: String): Array<SNSProperty> {
+    private fun getSNSProperties(key: String, defaultValue: String): List<SNSProperty> {
         val jsonString = sharedPreferences.getString(key, defaultValue) ?: defaultValue
-        val type = object : TypeToken<Array<SNSProperty>>() {}.type
+        val type = object : TypeToken<List<SNSProperty>>() {}.type
         return Gson().fromJson(jsonString, type)
     }
 

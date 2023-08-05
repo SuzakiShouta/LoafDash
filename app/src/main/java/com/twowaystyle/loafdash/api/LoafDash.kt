@@ -2,15 +2,17 @@ package com.twowaystyle.loafdash.api
 
 import android.util.Log
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.twowaystyle.loafdash.MainApplication
 import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
 import java.util.Calendar
 
-class LoafDash {
+class LoafDash(private val app: MainApplication) {
 
     private val LOGNAME = "LoafDash"
     private val collectionPass = "breadcrumbs"
@@ -32,8 +34,7 @@ class LoafDash {
 
     // 自分の近くのパンくずを取得する
     // 近くのユーザ、かつ、会ってないユーザ
-    fun getTargetUser(geoPoint: GeoPoint, pastEncounterUsers: Array<String>) {
-        val collectionRef = db.collection(collectionPass) // breadcrumbsコレクションの参照
+    fun getTargetUser(geoPoint: GeoPoint, pastEncounterUserIds: Array<String>) {
 
         // 受け取った緯度経度+-0.1以下の範囲を計算
         val latUpperBound = geoPoint.latitude + 0.1
@@ -41,22 +42,30 @@ class LoafDash {
         val longUpperBound = geoPoint.longitude + 0.1
         val longLowerBound = geoPoint.longitude - 0.1
 
-        collectionRef
+        db.collection(collectionPass)
             .whereGreaterThan("location", GeoPoint(latLowerBound, longLowerBound)) // 緯度経度の下限
             .whereLessThan("location", GeoPoint(latUpperBound, longUpperBound)) // 緯度経度の上限
-            .whereNotIn("UserId", pastEncounterUsers.toList()) // 受け取ったArray<String>に含まれないUserIdをクエリ
             .get()
             .addOnSuccessListener { querySnapshot ->
-                // クエリ結果のドキュメントを取得
-                for (document in querySnapshot.documents) {
-                    // ドキュメントのデータを取得
-                    val userId = document.getString("UserId") ?: ""
-                    val location = document.getGeoPoint("location")
-
-                    // 取得したデータを利用する処理を行う
-                    // 例えば、取得したデータをリストに追加するなど
-                    println("UserId: $userId, Location: $location")
+                val userIdList = pastEncounterUserIds.toList()
+                // 条件に合致するデータを絞り込む
+                val targetBreadcrumbs = querySnapshot.documents.filter { document ->
+                    val userId = document.getString("userId") ?: ""
+                    !userIdList.contains(userId)
                 }
+
+                // Applicationに返すBreadcrumbの配列
+                val breadcrumbs: MutableList<Breadcrumb> = mutableListOf()
+
+                // クエリ結果のドキュメントを取得
+                for (document in targetBreadcrumbs) {
+                    // ドキュメントのデータを取得
+                    Log.d(LOGNAME, "get breadcrumb id = ${document.id}")
+                    breadcrumbs.add(responseToModel(document))
+                }
+
+                // 取得したデータをApplicationに渡す
+                app.postTargetBreadcrumbs(breadcrumbs.toList())
             }
             .addOnFailureListener { e ->
                 // クエリ失敗時の処理
@@ -108,33 +117,29 @@ class LoafDash {
     // FireStoreのresponseを自作モデルに変換
     @Suppress("UNCHECKED_CAST")
     // as HashMap<String, Double>はキャストできないから@Suppressを記載
-    private fun responseToModel(response: QueryDocumentSnapshot): Breadcrumb {
+    private fun responseToModel(response: DocumentSnapshot): Breadcrumb {
         val id = response.id
-        val data: Map<String, Any> = response.data
-        val userId: String = data["user_id"] as String
+        val data: Map<String, Any>? = response.data
+        val userId: String = data?.get("userId") as String
 
         // FireStoreのgeoPoint型を使用してLocationオブジェクトを作成
         val location: GeoPoint = data["location"] as GeoPoint
 
         // FireStoreのMap型を使用してSNSPropertyの配列を作成
-        val snsProperties: () -> Array<SNSProperty> = {
-            val properties: ArrayList<SNSProperty> = arrayListOf()
-            val mapProperties: ArrayList<Map<String, String>> = data["sns_profiles"] as ArrayList<Map<String, String>>
-            for (mapProperty in mapProperties) {
-                val snsType: String = mapProperty["type"] as String
-                val snsId: String = mapProperty["id"] as String
-                properties.add(SNSProperty(snsType, snsId))
-            }
-            properties.toTypedArray()
-        }
+        val snsProperties: List<SNSProperty> = (data["snsProperties"] as? List<Map<String, String>>)
+            ?.map { mapProperty ->
+                val snsType: String = mapProperty["snsType"] ?: ""
+                val snsId: String = mapProperty["snsId"] ?: ""
+                SNSProperty(snsType, snsId)
+            } ?: emptyList()
 
         val profile: String = data["profile"] as String
-        val createdAt: Timestamp = data["created_at"] as Timestamp
+        val createdAt: Timestamp = data["createdAt"] as Timestamp
 
         return Breadcrumb(
             userId,
             location,
-            snsProperties(),
+            snsProperties,
             profile,
             createdAt
         )

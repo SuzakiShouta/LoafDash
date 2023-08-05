@@ -1,24 +1,29 @@
 package com.twowaystyle.loafdash
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.twowaystyle.loafdash.model.Breadcrumb
 
 
 class MainActivity : AppCompatActivity() {
 
-    // 周囲のパンくず一覧
-    val breadcrumbs: Array<Breadcrumb> = arrayOf()
-
+    lateinit var app: MainApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        app = application as MainApplication
 
+        app.start(this)
+        app.testPost()
 
-        // 起動時パンくずAPIを叩く
-        // 結果をbreadcrumbsへ
-
+        app.targetBreadcrumbs.observe(this, Observer {
+            for (breadcrumb in it){
+                Log.d("MainActivity", breadcrumb.toString())
+            }
+        })
 
     }
 }
