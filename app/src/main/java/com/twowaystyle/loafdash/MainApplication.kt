@@ -29,7 +29,6 @@ class MainApplication: Application() {
 
         locationSensor.start()
 
-
     }
 
     // userIdがあれば取得、なければ生成＆保存
