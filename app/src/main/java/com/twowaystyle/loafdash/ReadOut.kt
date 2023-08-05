@@ -55,4 +55,8 @@ class ReadOut(context: Context): TextToSpeech.OnInitListener{
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH,null,"ID")
     }
 
+    fun speechStop(){
+        tts?.stop()
+    }
+
 }

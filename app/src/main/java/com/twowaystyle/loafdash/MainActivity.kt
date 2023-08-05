@@ -14,6 +14,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
         // 起動時パンくずAPIを叩く
         // 結果をbreadcrumbsへ
 

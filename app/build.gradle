@@ -54,4 +54,7 @@ dependencies {
 
     // 位置情報
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+    // dbに独自モデルを使いたい
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
