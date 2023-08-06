@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         app = application as MainApplication
 
         app.start(this)
-        app.testPost()
+        app.test()
 
         app.targetBreadcrumbs.observe(this, Observer {
             for (breadcrumb in it){

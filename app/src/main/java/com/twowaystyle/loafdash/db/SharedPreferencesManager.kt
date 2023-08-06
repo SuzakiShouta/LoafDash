@@ -3,6 +3,7 @@ package com.twowaystyle.loafdash.db
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
 
 class SharedPreferencesManager(private val context: Context) {
@@ -21,7 +22,7 @@ class SharedPreferencesManager(private val context: Context) {
 
     fun setSNSProperties(snsProperties: List<SNSProperty>){
         val key = "snsProperties"
-        saveSNSProperties(key, snsProperties)
+        saveAsJson(key, snsProperties)
     }
 
     fun getSNSProperties(): List<SNSProperty> {
@@ -39,14 +40,14 @@ class SharedPreferencesManager(private val context: Context) {
         return getString(key, "")
     }
 
-    fun setKeepUserIds(keepUsers: Array<String>) {
-        val key = "keepUserIds"
-        saveStringArray(key, keepUsers)
+    fun setKeepUsers(keepUsers: List<Breadcrumb>) {
+        val key = "keepUsers"
+        saveAsJson(key, keepUsers)
     }
 
-    fun getKeepUserIds(): Array<String> {
-        val key = "keepUserIds"
-        return getStringArray(key, arrayOf(""))
+    fun getKeepUsers(): List<Breadcrumb> {
+        val key = "keepUsers"
+        return getKeepUsers(key, """[]""")
     }
 
     fun setPastEncounterUserIds(pastEncounterUsers: Array<String>) {
@@ -69,7 +70,7 @@ class SharedPreferencesManager(private val context: Context) {
     }
 
     // 一回JSONに変換してStringとして扱う
-    private fun saveSNSProperties(key: String, value: List<SNSProperty>) {
+    private fun saveAsJson(key: String, value: List<Any>) {
         val jsonString = Gson().toJson(value)
         sharedPreferences.edit().putString(key, jsonString).apply()
     }
@@ -77,6 +78,12 @@ class SharedPreferencesManager(private val context: Context) {
     private fun getSNSProperties(key: String, defaultValue: String): List<SNSProperty> {
         val jsonString = sharedPreferences.getString(key, defaultValue) ?: defaultValue
         val type = object : TypeToken<List<SNSProperty>>() {}.type
+        return Gson().fromJson(jsonString, type)
+    }
+
+    private fun getKeepUsers(key: String, defaultValue: String): List<Breadcrumb> {
+        val jsonString = sharedPreferences.getString(key, defaultValue) ?: defaultValue
+        val type = object : TypeToken<List<Breadcrumb>>() {}.type
         return Gson().fromJson(jsonString, type)
     }
 
