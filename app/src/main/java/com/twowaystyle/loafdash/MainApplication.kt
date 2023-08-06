@@ -3,6 +3,7 @@ package com.twowaystyle.loafdash
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 import com.twowaystyle.loafdash.api.LoafDash
 import com.twowaystyle.loafdash.db.SharedPreferencesManager
@@ -21,15 +22,21 @@ class MainApplication: Application() {
     var profile: String = ""
 
     // 周囲のパンくず一覧
-    private val _targetBreadcrumbs: MutableLiveData<List<Breadcrumb>> = MutableLiveData()
+    private val _targetBreadcrumbs: MutableLiveData<List<Breadcrumb>> = MutableLiveData(listOf())
     val targetBreadcrumbs: LiveData<List<Breadcrumb>> = _targetBreadcrumbs
 
-    fun postTargetBreadcrumbs(value: List<Breadcrumb>) {
+    fun setTargetBreadcrumbs(value: List<Breadcrumb>) {
         _targetBreadcrumbs.postValue(value)
     }
 
+    // 現在マッチングしてるユーザ
+    var encounterUser: Breadcrumb? = null
     // すれ違い済リスト
-    var pastEncounterUserIds: List<String> = listOf()
+    var pastEncounterUserIds: List<String> = listOf("")
+    // 最後にパンくずをおいた位置
+    var lastBreadcrumbDropGeoPoint: GeoPoint = GeoPoint(0.0,0.0)
+    // 最後にパンくずをダウンロードした位置
+    var lastBreadcrumbsGetGeoPoint: GeoPoint = GeoPoint(0.0,0.0)
 
     lateinit var sharedPreferencesManager: SharedPreferencesManager
     lateinit var readOut: ReadOut
@@ -66,11 +73,16 @@ class MainApplication: Application() {
         return userId
     }
 
-    // 自分の現在位置とすれ違い済リストを渡す
-    fun setTargetUserBreadcrumbs() {
-        loafDash.getTargetUser(GeoPoint(35.1, 135.0), arrayOf("qwer-asdf-zxcv-1234"))
+    fun postMyBreadcrumb() {
+        val myBreadcrumb: Breadcrumb = Breadcrumb(
+            userId = userId,
+            location = locationSensor.geoPoint.value!!,
+            snsProperties = snsProperties,
+            profile = profile,
+            createdAt = Timestamp.now()
+        )
+        loafDash.postBreadcrumb(myBreadcrumb)
     }
-
 
     fun test() {
         // api

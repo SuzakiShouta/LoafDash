@@ -23,7 +23,7 @@ class TestData {
         val breadcrumbs1: List<Breadcrumb> = listOf(
             Breadcrumb(
                 userId = "aaaa-asdf-zxcv-1234",
-                location = GeoPoint(35.1, 135.0),
+                location = GeoPoint(35.184782, 137.115550),
                 snsProperties = listOf(
                     SNSProperty(
                         snsType = "twitter",

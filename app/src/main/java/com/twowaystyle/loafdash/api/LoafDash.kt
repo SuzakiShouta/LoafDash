@@ -34,9 +34,9 @@ class LoafDash(private val app: MainApplication) {
 
     // 自分の近くのパンくずを取得する
     // 近くのユーザ、かつ、会ってないユーザ
-    fun getTargetUser(geoPoint: GeoPoint, pastEncounterUserIds: Array<String>) {
+    fun getTargetUser(geoPoint: GeoPoint, pastEncounterUserIds: List<String>) {
         db.collection(collectionPass)
-            .whereNotIn("userId", pastEncounterUserIds.toList()) // userIdで絞り込む
+            .whereNotIn("userId", pastEncounterUserIds) // userIdで絞り込む
             .limit(10) // 上位10件のみ取得
             .get()
             .addOnSuccessListener { querySnapshot ->
@@ -69,7 +69,7 @@ class LoafDash(private val app: MainApplication) {
                 }
 
                 // 取得したデータをApplicationに渡す
-                app.postTargetBreadcrumbs(breadcrumbs.toList())
+                app.setTargetBreadcrumbs(breadcrumbs.toList())
             }
             .addOnFailureListener { e ->
                 // クエリ失敗時の処理
