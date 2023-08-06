@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
         app.test()
         app.setTargetBreadcrumbs(TestData.breadcrumbs1)
 
+        // 古いデータを削除
+        app.loafDash.deleteOldDocuments()
+
         app.targetBreadcrumbs.observe(this, Observer {
             for (breadcrumb in it){
                 Log.d("MainActivity", breadcrumb.toString())
@@ -54,20 +57,21 @@ class MainActivity : AppCompatActivity() {
                 app.setTargetBreadcrumbs(TestData.breadcrumbs1)
             }
 
-            // マッチング
-            if (app.targetBreadcrumbs.value != null){
+            // マッチング。 パンくずを拾っていて、現在出会っていない時
+            if (app.targetBreadcrumbs.value != null && app.encounterUser == null){
                 Log.d("MainActivity", "target = ${app.targetBreadcrumbs.value!!}")
-//                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
-                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
+                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
+//                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
                 textview2.text = "encounter = ${isEncounter.toString()}"
+                // 近くに人がいる時
                 if (isEncounter != null) {
                     app.encounterUser = isEncounter
-                    app.readOut.speechText(isEncounter.profile)
+                    val text = "マッチングしました。プロフィールを読み上げます。" +
+                            isEncounter.profile +
+                            "保存しますか？"
+                    app.readOut.speechText(text)
                 }
             }
-
-
         })
-
     }
 }

@@ -32,7 +32,7 @@ class MainApplication: Application() {
     // 現在マッチングしてるユーザ
     var encounterUser: Breadcrumb? = null
     // すれ違い済リスト
-    var pastEncounterUserIds: List<String> = listOf("")
+    var pastEncounterUserIds: MutableList<String> = mutableListOf("")
     // 最後にパンくずをおいた位置
     var lastBreadcrumbDropGeoPoint: GeoPoint = GeoPoint(0.0,0.0)
     // 最後にパンくずをダウンロードした位置
@@ -69,6 +69,7 @@ class MainApplication: Application() {
         if (userId == "" ) {
             userId = UUID.randomUUID().toString()
             sharedPreferencesManager.setUserId(userId)
+            pastEncounterUserIds.add(userId)
         }
         return userId
     }
