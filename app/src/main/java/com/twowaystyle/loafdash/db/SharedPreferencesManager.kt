@@ -50,14 +50,14 @@ class SharedPreferencesManager(private val context: Context) {
         return getKeepUsers(key, """[]""")
     }
 
-    fun setPastEncounterUserIds(pastEncounterUsers: Array<String>) {
+    fun setPastEncounterUserIds(pastEncounterUsers: List<String>) {
         val key = "pastEncounterUserIds"
-        saveStringArray(key, pastEncounterUsers)
+        saveStringList(key, pastEncounterUsers)
     }
 
-    fun getPastEncounterUserIds(): Array<String> {
+    fun getPastEncounterUserIds(): List<String> {
         val key = "pastEncounterUserIds"
-        return getStringArray(key, arrayOf(""))
+        return getStringList(key, listOf(""))
     }
 
 
@@ -87,13 +87,13 @@ class SharedPreferencesManager(private val context: Context) {
         return Gson().fromJson(jsonString, type)
     }
 
-    private fun saveStringArray(key: String, stringArrayValue: Array<String>) {
+    private fun saveStringList(key: String, stringArrayValue: List<String>) {
         val stringSet = stringArrayValue.toSet()
         sharedPreferences.edit().putStringSet(key, stringSet).apply()
     }
 
-    private fun getStringArray(key: String, defaultValue: Array<String>): Array<String> {
+    private fun getStringList(key: String, defaultValue: List<String>): List<String> {
         val stringSet = sharedPreferences.getStringSet(key, emptySet()) ?: emptySet()
-        return stringSet.toTypedArray()
+        return stringSet.toList()
     }
 }

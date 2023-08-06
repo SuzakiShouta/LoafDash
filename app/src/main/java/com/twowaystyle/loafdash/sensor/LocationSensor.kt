@@ -1,4 +1,4 @@
-package com.twowaystyle.loafdash
+package com.twowaystyle.loafdash.sensor
 
 import android.Manifest
 import android.annotation.SuppressLint

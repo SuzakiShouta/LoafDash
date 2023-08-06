@@ -1,7 +1,6 @@
 package com.twowaystyle.loafdash
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.GeoPoint
@@ -9,6 +8,7 @@ import com.twowaystyle.loafdash.api.LoafDash
 import com.twowaystyle.loafdash.db.SharedPreferencesManager
 import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
+import com.twowaystyle.loafdash.sensor.LocationSensor
 import java.util.UUID
 
 class MainApplication: Application() {
@@ -27,6 +27,9 @@ class MainApplication: Application() {
     fun postTargetBreadcrumbs(value: List<Breadcrumb>) {
         _targetBreadcrumbs.postValue(value)
     }
+
+    // すれ違い済リスト
+    var pastEncounterUserIds: List<String> = listOf()
 
     lateinit var sharedPreferencesManager: SharedPreferencesManager
     lateinit var readOut: ReadOut
@@ -63,6 +66,7 @@ class MainApplication: Application() {
         return userId
     }
 
+    // 自分の現在位置とすれ違い済リストを渡す
     fun setTargetUserBreadcrumbs() {
         loafDash.getTargetUser(GeoPoint(35.1, 135.0), arrayOf("qwer-asdf-zxcv-1234"))
     }
