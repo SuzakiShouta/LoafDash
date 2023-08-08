@@ -10,6 +10,7 @@ import com.twowaystyle.loafdash.db.SharedPreferencesManager
 import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
 import com.twowaystyle.loafdash.sensor.LocationSensor
+import com.twowaystyle.loafdash.sensor.ShakeNeckEstimation
 import java.util.UUID
 
 class MainApplication: Application() {
@@ -17,6 +18,7 @@ class MainApplication: Application() {
     val LOGNAME: String = "MainApplication"
 
     // 自身のデータ
+    var userName: String = ""
     var userId: String = ""
     var snsProperties: List<SNSProperty> = listOf()
     var profile: String = ""
@@ -33,6 +35,8 @@ class MainApplication: Application() {
     var encounterUser: Breadcrumb? = null
     // すれ違い済リスト
     var pastEncounterUserIds: MutableList<String> = mutableListOf("")
+    // 保存したユーザ
+    var keepUsers: MutableLiveData<Breadcrumb> = MutableLiveData<Breadcrumb>()
     // 最後にパンくずをおいた位置
     var lastBreadcrumbDropGeoPoint: GeoPoint = GeoPoint(0.0,0.0)
     // 最後にパンくずをダウンロードした位置
@@ -42,6 +46,7 @@ class MainApplication: Application() {
     lateinit var readOut: ReadOut
     lateinit var locationSensor: LocationSensor
     lateinit var loafDash: LoafDash
+    lateinit var shakeNeckEstimation: ShakeNeckEstimation
 
     fun start(activity: MainActivity) {
         // インスタンス化
@@ -49,6 +54,7 @@ class MainApplication: Application() {
         readOut = ReadOut(this)
         locationSensor = LocationSensor(activity)
         loafDash = LoafDash(this)
+        shakeNeckEstimation = ShakeNeckEstimation(this)
 
         // データ取得、Api
         userId = checkUserId()
@@ -60,6 +66,7 @@ class MainApplication: Application() {
 
         // センサ、推定類
         locationSensor.start()
+        shakeNeckEstimation.start()
 
     }
 
@@ -77,6 +84,7 @@ class MainApplication: Application() {
     fun postMyBreadcrumb() {
         val myBreadcrumb: Breadcrumb = Breadcrumb(
             userId = userId,
+            userName = userName,
             location = locationSensor.geoPoint.value!!,
             snsProperties = snsProperties,
             profile = profile,

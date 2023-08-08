@@ -5,6 +5,7 @@ import com.google.firebase.firestore.GeoPoint
 
 data class Breadcrumb(
     val userId: String,
+    val userName: String,
     val location: GeoPoint,
     val snsProperties: List<SNSProperty>,
     val profile: String,

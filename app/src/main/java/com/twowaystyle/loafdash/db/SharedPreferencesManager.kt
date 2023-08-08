@@ -10,6 +10,16 @@ class SharedPreferencesManager(private val context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
 
+    fun setUserName(userId: String){
+        val key = "userName"
+        saveString(key, userId)
+    }
+
+    fun getUserName(): String {
+        val key = "userName"
+        return getString(key, "")
+    }
+
     fun setUserId(userId: String){
         val key = "userId"
         saveString(key, userId)
