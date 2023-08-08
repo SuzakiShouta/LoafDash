@@ -4,6 +4,7 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import java.util.Locale
 
 class ReadOut(context: Context): TextToSpeech.OnInitListener{
@@ -15,6 +16,8 @@ class ReadOut(context: Context): TextToSpeech.OnInitListener{
         tts = TextToSpeech(context,this)
     }
 
+    var speechState: MutableLiveData<String> = MutableLiveData<String>()
+
     override fun onInit(status: Int){
         if(status == TextToSpeech.SUCCESS){
             Log.d("tts","TextToSpeech初期化成功")
@@ -22,6 +25,7 @@ class ReadOut(context: Context): TextToSpeech.OnInitListener{
             val listener = object : UtteranceProgressListener(){
                 var tag : String = "TTS"
                 override fun onDone(utteranceId: String?) {
+                    speechState.postValue("onDone")
                     Log.d(tag,"音声再生が完了しました。")
                 }
                 override fun onError(utteranceId: String?) {
@@ -31,6 +35,7 @@ class ReadOut(context: Context): TextToSpeech.OnInitListener{
                     Log.d(tag,"音声再生中にエラーが発生しました。")
                 }
                 override fun onStart(utteranceId: String?) {
+                    speechState.postValue("onStart")
                     Log.d(tag,"音声再生を開始します。")
                 }
                 override fun onStop(utteranceId: String?, interrupted: Boolean) {
