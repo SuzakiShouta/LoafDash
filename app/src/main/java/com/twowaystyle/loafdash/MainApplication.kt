@@ -1,6 +1,7 @@
 package com.twowaystyle.loafdash
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
@@ -10,6 +11,7 @@ import com.twowaystyle.loafdash.db.SharedPreferencesManager
 import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
 import com.twowaystyle.loafdash.sensor.LocationSensor
+import com.twowaystyle.loafdash.sensor.LocationUtil
 import com.twowaystyle.loafdash.sensor.ShakeNeckEstimation
 import java.util.UUID
 
@@ -35,8 +37,40 @@ class MainApplication: Application() {
     var encounterUser: Breadcrumb? = null
     // すれ違い済リスト
     var pastEncounterUserIds: MutableList<String> = mutableListOf("")
+    fun addPastEncounterUserId(userId: String) {
+        pastEncounterUserIds.add(userId)
+        if (pastEncounterUserIds.size > 0) {
+            sharedPreferencesManager.setPastEncounterUserIds(pastEncounterUserIds.toList())
+        }
+    }
     // 保存したユーザ
-    var keepUsers: MutableLiveData<Breadcrumb> = MutableLiveData<Breadcrumb>()
+    var keepUsersList: MutableLiveData<List<Breadcrumb>> = MutableLiveData<List<Breadcrumb>>()
+    fun addKeepUsersList(breadcrumb: Breadcrumb) {
+        val currentList = keepUsersList.value ?: emptyList() // Get the current list or create an empty list
+        val updatedList = currentList.toMutableList() // Convert to mutable list for modification
+        updatedList.add(breadcrumb) // Add the new data to the mutable list
+        keepUsersList.value = updatedList.toList() // Update the LiveData with the modified list
+        if (keepUsersList.value != null) {
+            sharedPreferencesManager.setKeepUsers(keepUsersList.value!!)
+        }
+    }
+    fun removeKeepUsersListById(userId: String) {
+        val currentList = keepUsersList.value ?: emptyList() // Get the current list or create an empty list
+        val updatedList = currentList.toMutableList() // Convert to mutable list for modification
+
+        // Find the index of the Breadcrumb with the specified userId
+        val indexToRemove = updatedList.indexOfFirst { it.userId == userId }
+
+        if (indexToRemove != -1) {
+            updatedList.removeAt(indexToRemove) // Remove the Breadcrumb at the found index
+            keepUsersList.value = updatedList.toList() // Update the LiveData with the modified list
+        }
+        if (keepUsersList.value != null) {
+            sharedPreferencesManager.setKeepUsers(keepUsersList.value!!)
+        }
+    }
+
+
     // 最後にパンくずをおいた位置
     var lastBreadcrumbDropGeoPoint: GeoPoint = GeoPoint(0.0,0.0)
     // 最後にパンくずをダウンロードした位置
@@ -54,12 +88,14 @@ class MainApplication: Application() {
         readOut = ReadOut(this)
         locationSensor = LocationSensor(activity)
         loafDash = LoafDash(this)
-        shakeNeckEstimation = ShakeNeckEstimation(this)
+        shakeNeckEstimation = ShakeNeckEstimation.create(this)
 
         // データ取得、Api
         userId = checkUserId()
         snsProperties = sharedPreferencesManager.getSNSProperties()
         profile = sharedPreferencesManager.getProfile()
+        keepUsersList.postValue(sharedPreferencesManager.getKeepUsers())
+        pastEncounterUserIds = sharedPreferencesManager.getPastEncounterUserIds().toMutableList()
 
         // 権限
         locationSensor.requestPermissions()
@@ -81,40 +117,58 @@ class MainApplication: Application() {
         return userId
     }
 
-    fun postMyBreadcrumb() {
-        val myBreadcrumb: Breadcrumb = Breadcrumb(
-            userId = userId,
-            userName = userName,
-            location = locationSensor.geoPoint.value!!,
-            snsProperties = snsProperties,
-            profile = profile,
-            createdAt = Timestamp.now()
-        )
-        loafDash.postBreadcrumb(myBreadcrumb)
+    fun postBreadcrumb(geoPoint: GeoPoint) {
+        lastBreadcrumbDropGeoPoint = geoPoint
+//        app.postMyBreadcrumb()
     }
 
-    fun test() {
-        // api
-//        loafDash.postBreadcrumb(TestData.breadcrumb1)
-//        loafDash.getTargetUser(GeoPoint(35.1, 135.0), arrayOf("qwer-asdf-zxcv-1234"))
-//        loafDash.deleteOldDocuments()
+    fun downloadBreadcrumb(geoPoint: GeoPoint) {
+        Log.d("MainActivity", "download breadcrumbs")
+        lastBreadcrumbDropGeoPoint = geoPoint
+//        app.loafDash.getTargetUser(app.locationSensor.geoPoint.value!!, app.pastEncounterUserIds)
+        setTargetBreadcrumbs(TestData.breadcrumbs1)
+    }
 
-        // db
-//        Log.d(LOGNAME, "${sharedPreferencesManager.getUserId()}")
-//
-//        sharedPreferencesManager.setSNSProperties(TestData.breadcrumb1.snsProperties)
-//        sharedPreferencesManager.setProfile(TestData.breadcrumb1.profile)
-//        sharedPreferencesManager.setKeepUsers(TestData.breadcrumbs1)
-//
-//        Log.d(LOGNAME, "${sharedPreferencesManager.getSNSProperties()}")
-//        Log.d(LOGNAME, "${sharedPreferencesManager.getProfile()}")
-//
-//        for ( keepUser in sharedPreferencesManager.getKeepUsers()) {
-//            Log.d(LOGNAME, "keepUser = $keepUser")
-//        }
-//
-//        for ( id in sharedPreferencesManager.getPastEncounterUserIds()) {
-//            Log.d(LOGNAME, "id = $id")
-//        }
+    // マッチングした時
+    fun matching(breadcrumb: Breadcrumb) {
+        encounterUser = breadcrumb
+        Log.d(LOGNAME, "matching, encounter = $breadcrumb")
+        val text = breadcrumb.userName +
+                "さんとマッチングしました。プロフィールを読み上げます。" +
+                breadcrumb.profile +
+                "保存しますか？" +
+                "首を縦に振ると保存します。首を横に振ると削除します。首を傾げると今回だけ無視します"
+        readOut.speechText(text)
+    }
+
+    fun keepEncounterUser() {
+        if (encounterUser != null) {
+            addKeepUsersList(encounterUser!!)
+            addPastEncounterUserId(encounterUser!!.userId)
+            readOut.speechText("${encounterUser!!.userName}を保存しました。")
+        }
+    }
+
+    fun notKeepEncounterUser() {
+        if (encounterUser != null) {
+            addPastEncounterUserId(encounterUser!!.userId)
+            readOut.speechText("${encounterUser!!.userName}を保存しました。")
+        }
+    }
+
+    fun postMyBreadcrumb() {
+        if (locationSensor.geoPoint.value != null) {
+            lastBreadcrumbDropGeoPoint = locationSensor.geoPoint.value!!
+            val myBreadcrumb: Breadcrumb = Breadcrumb(
+                userId = userId,
+                userName = userName,
+                location = locationSensor.geoPoint.value!!,
+                snsProperties = snsProperties,
+                profile = profile,
+                createdAt = Timestamp.now()
+            )
+            loafDash.postBreadcrumb(myBreadcrumb)
+            Log.d(LOGNAME,"postMyBreadcrumb, $myBreadcrumb")
+        }
     }
 }

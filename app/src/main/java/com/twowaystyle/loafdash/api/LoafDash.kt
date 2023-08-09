@@ -127,6 +127,8 @@ class LoafDash(private val app: MainApplication) {
     private fun responseToModel(response: DocumentSnapshot): Breadcrumb {
         val id = response.id
         val data: Map<String, Any>? = response.data
+
+        val userName: String = data?.get("userName") as String
         val userId: String = data?.get("userId") as String
 
         // FireStoreのgeoPoint型を使用してLocationオブジェクトを作成
@@ -145,6 +147,7 @@ class LoafDash(private val app: MainApplication) {
 
         return Breadcrumb(
             userId,
+            userName,
             location,
             snsProperties,
             profile,

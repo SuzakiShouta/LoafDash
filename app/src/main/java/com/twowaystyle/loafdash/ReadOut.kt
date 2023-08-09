@@ -16,6 +16,11 @@ class ReadOut(context: Context): TextToSpeech.OnInitListener{
         tts = TextToSpeech(context,this)
     }
 
+    companion object {
+        const val STATE_DONE = "onDone"
+        const val STATE_START = "onStart"
+    }
+
     var speechState: MutableLiveData<String> = MutableLiveData<String>()
 
     override fun onInit(status: Int){

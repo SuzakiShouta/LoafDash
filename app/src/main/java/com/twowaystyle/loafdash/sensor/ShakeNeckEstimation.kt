@@ -65,7 +65,7 @@ class ShakeNeckEstimation(context: Context): SensorEventListener {
         windowZ.add(z)
 
         if(windowX.size >= WINDOW_SIZE * HZ) shakeNeckEstimation()
-        Log.d(LOG_NAME,"${event.values.toList()}")
+//        Log.d(LOG_NAME,"${event.values.toList()}")
     }
 
     private fun shakeNeckEstimation(){
@@ -86,6 +86,7 @@ class ShakeNeckEstimation(context: Context): SensorEventListener {
             }
             else -> NON
         }
+        Log.d(LOG_NAME,"${estimation}")
 
         shakeNeck.postValue(estimation)
         shakeNeckState.value = estimation
