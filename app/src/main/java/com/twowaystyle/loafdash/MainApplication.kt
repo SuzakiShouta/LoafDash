@@ -146,13 +146,15 @@ class MainApplication: Application() {
             addKeepUsersList(encounterUser!!)
             addPastEncounterUserId(encounterUser!!.userId)
             readOut.speechText("${encounterUser!!.userName}を保存しました。")
+            encounterUser = null
         }
     }
 
     fun notKeepEncounterUser() {
         if (encounterUser != null) {
             addPastEncounterUserId(encounterUser!!.userId)
-            readOut.speechText("${encounterUser!!.userName}を保存しました。")
+            readOut.speechText("${encounterUser!!.userName}を保存しませんでした。")
+            encounterUser = null
         }
     }
 

@@ -1,9 +1,22 @@
 package com.twowaystyle.loafdash
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
 import com.google.firebase.firestore.GeoPoint
 import com.twowaystyle.loafdash.ReadOut.Companion.STATE_DONE
@@ -12,20 +25,19 @@ import com.twowaystyle.loafdash.sensor.LocationUtil
 import com.twowaystyle.loafdash.sensor.ShakeNeckEstimation.Companion.HEIGHT
 import com.twowaystyle.loafdash.sensor.ShakeNeckEstimation.Companion.SLANT
 import com.twowaystyle.loafdash.sensor.ShakeNeckEstimation.Companion.WIDTH
+import com.twowaystyle.loafdash.ui.main.MainFragment
+import com.twowaystyle.loafdash.ui.theme.LoafDashTheme
 
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var app: MainApplication
-    lateinit var textview: TextView
-    lateinit var textview2: TextView
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        textview = findViewById(R.id.textview_1)
-        textview2 = findViewById(R.id.textview_2)
 
         app = application as MainApplication
 
@@ -54,14 +66,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             // マッチング。 パンくずを拾っていて、現在出会っていない時
-            if (app.targetBreadcrumbs.value != null && app.encounterUser == null){
-                // val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
-                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
-                // 近くに人がいる時
-                if (isEncounter != null) {
-                    app.matching(isEncounter)
-                }
-            }
+//            if (app.targetBreadcrumbs.value != null && app.encounterUser == null){
+//                // val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
+//                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
+//                // 近くに人がいる時
+//                if (isEncounter != null) {
+//                    app.matching(isEncounter)
+//                }
+//            }
 
             // 音声読み上げが終わっていて、位置情報が更新されたら、出会ってる人を削除する。
             if (app.readOut.speechState.value == STATE_DONE) {
@@ -80,9 +92,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // 横に振った時、すれ違いリストに追加
                 else if (it == WIDTH) {
-                    app.addPastEncounterUserId(app.encounterUser!!.userId)
-                    app.readOut.speechText("${app.encounterUser!!.userName}を削除しました。")
-                    app.encounterUser = null
+                    app.notKeepEncounterUser()
                 }
                 // 傾げた時、何もしない
                 else if (it == SLANT) {
@@ -92,8 +102,31 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        app.keepUsersList.observe(this, Observer {
-            textview.text = it.toString()
-        })
+        setContent{
+            LoafDashTheme() {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    // 初期画面の検索条件の設定画面のFragmentを表示
+                    Scaffold(
+                        content = {
+                            AndroidView(factory = { context ->
+                                FragmentContainerView(context).apply {
+                                    id = View.generateViewId()
+                                }
+                            }, update = {
+                                val fragment = MainFragment.newInstance()
+                                val transaction = supportFragmentManager.beginTransaction()
+                                transaction.replace(it.id, fragment)
+                                transaction.commit()
+                            })
+                        },
+                    )
+                }
+            }
+        }
+
+
     }
 }
