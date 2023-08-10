@@ -24,15 +24,15 @@ class TestData {
         val breadcrumbs1: List<Breadcrumb> = listOf(
             Breadcrumb(
                 userId = "aaaa-asdf-zxcv-1234",
-                userName = "breadcrumb1-1",
+                userName = "パンくず太郎",
                 location = GeoPoint(35.184782, 137.115550),
                 snsProperties = listOf(
                     SNSProperty(
                         snsType = "twitter",
-                        snsId = "@mjnhbgvf"
+                        snsId = "@pankuzutarooo"
                     )
                 ),
-                profile = "breadcrumbs1-1です",
+                profile = "この近くにいる人繋がりましょう！！！\n 好きなものは強力粉、嫌いなものはピーナッツバターです！ \n 趣味は発酵です。酵母菌系の人は一緒にどうですか？",
                 createdAt = Timestamp.now()
             ),
             Breadcrumb(

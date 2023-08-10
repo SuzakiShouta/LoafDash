@@ -1,5 +1,6 @@
 package com.twowaystyle.loafdash.ui.main.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.AbsoluteCutCornerShape
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonDefaults.shape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,13 +30,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 import com.twowaystyle.loafdash.model.Breadcrumb
 import com.twowaystyle.loafdash.model.SNSProperty
+import com.twowaystyle.loafdash.ui.theme.Beige
+import com.twowaystyle.loafdash.ui.theme.Brown
 
 class BreadcrumbList {
 
@@ -42,8 +51,8 @@ class BreadcrumbList {
         fun OtherList(list: List<Breadcrumb>) {
             val listState = rememberLazyListState()
             LazyColumn(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 state = listState,
             ) {
@@ -53,12 +62,14 @@ class BreadcrumbList {
                             it, modifier = Modifier
                                 .wrapContentHeight()
                                 .fillMaxWidth()
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.DarkGray,
+                                .shadow(
+                                    elevation = 6.dp,
                                     shape = RoundedCornerShape(20.dp)
                                 )
-                                .padding(8.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
                         )
                     }
                 }
@@ -70,58 +81,74 @@ class BreadcrumbList {
                     listState.firstVisibleItemIndex >= list.size - 15
                 }
             }
-
-            // リストの終端に近い場合は追加の検索結果を取得
-            if (listEnd) {
-//        viewModel.addSearchShop(viewModel.apiParameter)
-            }
         }
 
         @Composable
         fun OtherListRow(data: Breadcrumb, modifier: Modifier = Modifier) {
-            // ボタンでその店の詳細を表示
             Column(
                 modifier = modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // 表示要素：サムネイル，店舗名，アクセス
-                Text(text = data.userName)// 名前
-                Spacer(modifier = Modifier.size(8.dp))
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 2.dp,
-                            color = Color.Green,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .padding(8.dp)
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
-                    Text(text = "プロフィール")
-                    Text(text = data.profile)
-                }
-                data.snsProperties.forEach {
-                    Spacer(modifier = Modifier.size(8.dp))
-                    SNSPropertyRow(
-                        it, modifier = Modifier
-                            .wrapContentHeight()
+                    // 表示要素
+                    Text(
+                        text = data.userName,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        fontSize = 32.sp
+                    )// 名前
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Column(
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .border(
-                                width = 2.dp,
-                                color = Color.Blue,
+                            .background(
+                                color = Beige,
                                 shape = RoundedCornerShape(20.dp)
                             )
-                            .padding(8.dp)
-                    )
+                            .padding(16.dp)
+                    ) {
+                        Text(text = "プロフィール")
+                        Text(text = data.profile)
+                    }
+                    Spacer(modifier = Modifier.size(8.dp))
+                    data.snsProperties.forEach {
+                        Spacer(modifier = Modifier.size(8.dp))
+                        SNSPropertyRow(
+                            it, modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .background(
+                                    color = Beige,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(16.dp)
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.size(8.dp))
                 Button(
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
+                        containerColor = Brown,
+                        contentColor = Color.White,
                     ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Brown,
+
+                        )
+                    ,
+                    shape = AbsoluteRoundedCornerShape(topLeft = 0.dp, topRight = 0.dp, bottomLeft = 20.dp, bottomRight = 20.dp)
+                    ,
                     onClick = { /*TODO*/ }) {
-                    Text("Delete")
+                    Text(
+                        text ="Delete",
+                        color = Color.White
+                    )
                 }
             }
         }
@@ -155,15 +182,15 @@ class BreadcrumbList {
                 val data = listOf(
                     Breadcrumb(
                         userId = "aaaa-asdf-zxcv-1234",
-                        userName = "breadcrumbs1-1",
+                        userName = "パンくず太郎",
                         location = GeoPoint(35.184782, 137.115550),
                         snsProperties = listOf(
                             SNSProperty(
                                 snsType = "twitter",
-                                snsId = "@mjnhbgvf"
+                                snsId = "@pankuzutarooo"
                             )
                         ),
-                        profile = "breadcrumbs1-1です",
+                        profile = "この近くにいる人繋がりましょう！！！\n 好きなものは強力粉、嫌いなものはピーナッツバターです！ \n 趣味は発酵です。酵母菌系の人は一緒にどうですか？",
                         createdAt = Timestamp.now()
                     ),
                     Breadcrumb(
