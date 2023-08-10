@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
@@ -22,10 +24,13 @@ class MainApplication: Application() {
 
     val LOGNAME: String = "MainApplication"
 
+    // 画面遷移
+    val profileUiExpand = mutableStateOf(false)
+
     // 自身のデータ
     var userName: MutableState<String> = mutableStateOf("")
     var userId: String = ""
-    var snsProperties: MutableList<SNSProperty> = mutableStateListOf(SNSProperty("",""))
+    var snsProperties: SnapshotStateList<SNSProperty> = mutableStateListOf(SNSProperty("", ""))
     var profile: MutableState<String> = mutableStateOf("")
 
     // 周囲のパンくず一覧
@@ -96,7 +101,7 @@ class MainApplication: Application() {
         // データ取得、Api
         userId = checkUserId()
         userName.value = sharedPreferencesManager.getUserName()
-        snsProperties = sharedPreferencesManager.getSNSProperties().toMutableList()
+        snsProperties = sharedPreferencesManager.getSNSProperties().toMutableStateList()
         profile.value = sharedPreferencesManager.getProfile()
         keepUsersList.postValue(sharedPreferencesManager.getKeepUsers())
         pastEncounterUserIds = sharedPreferencesManager.getPastEncounterUserIds().toMutableList()
