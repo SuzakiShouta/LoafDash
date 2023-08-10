@@ -22,14 +22,11 @@ class CrumbBox {
 
         @Composable
         fun CrumbBox(
+            modifier: Modifier = Modifier,
             content: @Composable () -> Unit
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .background(Beige, shape = RoundedCornerShape(16.dp))
-                    .wrapContentSize(align = Alignment.Center)
+                modifier = modifier
             ) {
                 content()
             }

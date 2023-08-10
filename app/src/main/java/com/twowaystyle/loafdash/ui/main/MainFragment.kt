@@ -1,32 +1,37 @@
 package com.twowaystyle.loafdash.ui.main
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.twowaystyle.loafdash.MainApplication
-import com.twowaystyle.loafdash.R
-import com.twowaystyle.loafdash.ui.main.component.BreadcrumbList
+import com.twowaystyle.loafdash.ui.main.component.BreadcrumbList.Companion.ProfileList
 import com.twowaystyle.loafdash.ui.main.component.BreadcrumbList.Companion.OtherList
-import com.twowaystyle.loafdash.ui.main.component.CrumbBox.Companion.CrumbBox
 import com.twowaystyle.loafdash.ui.main.component.NoDataView.Companion.NoData
 import com.twowaystyle.loafdash.ui.theme.Beige
 import com.twowaystyle.loafdash.ui.theme.Brown
@@ -51,22 +56,80 @@ class MainFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val breadcrumbs = app.keepUsersList.observeAsState()
+                val profileExpand by remember { app.profileUiExpand }
                 LoafDashTheme{
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = Brown
                     ){
-                        Log.d(LOGNAME, "${breadcrumbs.value}")
-                        CrumbBox {
-                            if (breadcrumbs.value != null) {
-                                if (breadcrumbs.value!!.isNotEmpty()) {
-                                    OtherList(list = breadcrumbs.value!!)
-                                } else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        NoData()
+                        ConstraintLayout(
+                            modifier = Modifier.fillMaxSize()
+                        ){
+                            Log.d(LOGNAME, "${breadcrumbs.value}")
+                            val (column, button) = createRefs()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                                    .background(Beige, shape = RoundedCornerShape(16.dp))
+                                    .wrapContentSize(align = Alignment.Center)
+                                    .constrainAs(column){
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    }
+                            ) {
+                                when(profileExpand){
+                                    true -> {
+                                        ProfileList(
+                                            userNameState = app.userName,
+                                            profileState = app.profile,
+                                            snsList = app.snsProperties
+                                        )
+                                    }
+                                    false -> {
+                                        if (breadcrumbs.value != null) {
+                                            if (breadcrumbs.value!!.isNotEmpty()) {
+                                                OtherList(list = breadcrumbs.value!!)
+                                            } else {
+                                                Box(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    NoData()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Button(
+                                modifier = Modifier
+                                    .size(70.dp)
+                                    .constrainAs(button) {
+                                        bottom.linkTo(parent.bottom, margin = 8.dp)
+                                        end.linkTo(parent.end, margin = 8.dp)
+                                    },
+                                onClick = {
+                                    app.profileUiExpand.value = !app.profileUiExpand.value
+                                }) {
+                                when (profileExpand) {
+                                    true -> {
+                                        Image(
+                                            Icons.Default.ArrowBack,
+                                            contentDescription = "",
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier.wrapContentSize()
+                                        )
+                                    }
+                                    false -> {
+                                        Image(
+                                            Icons.Default.ArrowDropDown,
+                                            contentDescription = "",
+                                            contentScale = ContentScale.Fit,
+                                            modifier = Modifier.wrapContentSize()
+                                        )
                                     }
                                 }
                             }
