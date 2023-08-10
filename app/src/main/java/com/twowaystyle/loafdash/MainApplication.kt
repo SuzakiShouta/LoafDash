@@ -3,6 +3,7 @@ package com.twowaystyle.loafdash
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,7 +25,7 @@ class MainApplication: Application() {
     // 自身のデータ
     var userName: MutableState<String> = mutableStateOf("")
     var userId: String = ""
-    var snsProperties: List<SNSProperty> = listOf()
+    var snsProperties: MutableList<SNSProperty> = mutableStateListOf(SNSProperty("",""))
     var profile: MutableState<String> = mutableStateOf("")
 
     // 周囲のパンくず一覧
@@ -95,7 +96,7 @@ class MainApplication: Application() {
         // データ取得、Api
         userId = checkUserId()
         userName.value = sharedPreferencesManager.getUserName()
-        snsProperties = sharedPreferencesManager.getSNSProperties()
+        snsProperties = sharedPreferencesManager.getSNSProperties().toMutableList()
         profile.value = sharedPreferencesManager.getProfile()
         keepUsersList.postValue(sharedPreferencesManager.getKeepUsers())
         pastEncounterUserIds = sharedPreferencesManager.getPastEncounterUserIds().toMutableList()

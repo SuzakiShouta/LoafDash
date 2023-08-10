@@ -66,14 +66,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             // マッチング。 パンくずを拾っていて、現在出会っていない時
-//            if (app.targetBreadcrumbs.value != null && app.encounterUser == null){
-//                // val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
-//                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
-//                // 近くに人がいる時
-//                if (isEncounter != null) {
-//                    app.matching(isEncounter)
-//                }
-//            }
+            if (app.targetBreadcrumbs.value != null && app.encounterUser == null){
+                // val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, app.locationSensor.geoPoint.value!!)
+                val isEncounter = LocationUtil.isEncounter(app.targetBreadcrumbs.value!!, GeoPoint(35.184785, 137.115559))
+                // 近くに人がいる時
+                if (isEncounter != null) {
+                    app.matching(isEncounter)
+                }
+            }
 
             // 音声読み上げが終わっていて、位置情報が更新されたら、出会ってる人を削除する。
             if (app.readOut.speechState.value == STATE_DONE) {

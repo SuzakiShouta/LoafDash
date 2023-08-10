@@ -18,7 +18,7 @@ class ShakeNeckEstimation(context: Context): SensorEventListener {
         const val HZ = 50
         const val WINDOW_SIZE = 1
         const val SHAKE_TH = 1.5
-        const val SLANT_TH = 1
+        const val SLANT_TH = 1.5
 
         const val NON = "non"
         const val HEIGHT = "height"

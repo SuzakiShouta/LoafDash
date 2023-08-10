@@ -25,7 +25,7 @@ class TestData {
             Breadcrumb(
                 userId = "aaaa-asdf-zxcv-1234",
                 userName = "パンくず太郎",
-                location = GeoPoint(35.184782, 137.115550),
+                location = GeoPoint(35.184785, 137.115559),
                 snsProperties = listOf(
                     SNSProperty(
                         snsType = "twitter",
