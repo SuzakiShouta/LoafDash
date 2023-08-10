@@ -1,11 +1,13 @@
 package com.twowaystyle.loafdash.ui.main.component
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.twowaystyle.loafdash.ui.theme.LoafDashTheme
 
 class NoDataView {
     companion object {
@@ -13,7 +15,7 @@ class NoDataView {
         fun NoData() {
             Text(
                 text = "携帯を口に咥えて走ろう！",
-                color = Color.White,
+                color = Color.Blue,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
             )
@@ -23,6 +25,8 @@ class NoDataView {
     @Preview(showBackground = true)
     @Composable
     fun NoDataPreview() {
-        NoData()
+        LoafDashTheme {
+            NoData()
+        }
     }
 }
