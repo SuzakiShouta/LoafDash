@@ -2,6 +2,8 @@ package com.twowaystyle.loafdash
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
@@ -20,10 +22,10 @@ class MainApplication: Application() {
     val LOGNAME: String = "MainApplication"
 
     // 自身のデータ
-    var userName: String = ""
+    var userName: MutableState<String> = mutableStateOf("")
     var userId: String = ""
     var snsProperties: List<SNSProperty> = listOf()
-    var profile: String = ""
+    var profile: MutableState<String> = mutableStateOf("")
 
     // 周囲のパンくず一覧
     private val _targetBreadcrumbs: MutableLiveData<List<Breadcrumb>> = MutableLiveData(listOf())
@@ -92,8 +94,9 @@ class MainApplication: Application() {
 
         // データ取得、Api
         userId = checkUserId()
+        userName.value = sharedPreferencesManager.getUserName()
         snsProperties = sharedPreferencesManager.getSNSProperties()
-        profile = sharedPreferencesManager.getProfile()
+        profile.value = sharedPreferencesManager.getProfile()
         keepUsersList.postValue(sharedPreferencesManager.getKeepUsers())
         pastEncounterUserIds = sharedPreferencesManager.getPastEncounterUserIds().toMutableList()
 
@@ -115,6 +118,12 @@ class MainApplication: Application() {
             pastEncounterUserIds.add(userId)
         }
         return userId
+    }
+
+    fun saveProfile() {
+        sharedPreferencesManager.setUserName(userName.value)
+        sharedPreferencesManager.setSNSProperties(snsProperties)
+        sharedPreferencesManager.setProfile(profile.value)
     }
 
     fun postBreadcrumb(geoPoint: GeoPoint) {
@@ -163,10 +172,10 @@ class MainApplication: Application() {
             lastBreadcrumbDropGeoPoint = locationSensor.geoPoint.value!!
             val myBreadcrumb: Breadcrumb = Breadcrumb(
                 userId = userId,
-                userName = userName,
+                userName = userName.value,
                 location = locationSensor.geoPoint.value!!,
                 snsProperties = snsProperties,
-                profile = profile,
+                profile = profile.value,
                 createdAt = Timestamp.now()
             )
             loafDash.postBreadcrumb(myBreadcrumb)
