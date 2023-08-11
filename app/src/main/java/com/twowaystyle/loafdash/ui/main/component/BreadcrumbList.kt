@@ -17,12 +17,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
@@ -37,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -215,8 +219,25 @@ class BreadcrumbList {
                         onValueChange = {
                             userNameState.value = it
                         },
-                        label = { Text("user name")}
+                        label = { Text(
+                            text = "user name",
+                            color = Brown
+                        )},
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f),
+                        textStyle = TextStyle(fontSize = 24.sp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = Color.Black, // テキストの色
+                            containerColor = Color.White, // 背景色
+                            cursorColor = Color.Black, // カーソルの色
+                            focusedIndicatorColor = Color.Transparent, // フォーカス時のインジケータの色
+                            unfocusedIndicatorColor = Color.Transparent, // 非フォーカス時のインジケータの色
+                            disabledIndicatorColor = Color.Transparent // 非アクティブ時のインジケータの色
+                        )
                     )
+                    Spacer(modifier = Modifier.size(8.dp))
+
                 }
 
                 item{
@@ -225,9 +246,24 @@ class BreadcrumbList {
                         onValueChange = {
                             profileState.value = it
                         },
-                        label = { Text("profile") },
+                        label = { Text(
+                            text = "profile",
+                            color = Brown
+                        ) },
+                        shape = RoundedCornerShape(20.dp),
+                        textStyle = TextStyle(fontSize = 24.sp),
                         modifier = Modifier
+                            .fillMaxWidth(0.9f),
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = Color.Black, // テキストの色
+                            containerColor = Color.White, // 背景色
+                            cursorColor = Color.Black, // カーソルの色
+                            focusedIndicatorColor = Color.Transparent, // フォーカス時のインジケータの色
+                            unfocusedIndicatorColor = Color.Transparent, // 非フォーカス時のインジケータの色
+                            disabledIndicatorColor = Color.Transparent // 非アクティブ時のインジケータの色
+                        )
                     )
+                    Spacer(modifier = Modifier.size(8.dp))
                 }
 
                 items(count = snsList.size) { num ->
@@ -245,7 +281,7 @@ class BreadcrumbList {
 
                 item{
                     Button(onClick = {
-                        snsList.add(SNSProperty("fb", "@id"))
+                        snsList.add(SNSProperty("", ""))
                         Log.d(javaClass.name, snsList.toString())
                     }) {
                         Text("add")
@@ -265,13 +301,33 @@ class BreadcrumbList {
             var snsType by remember { mutableStateOf(data.snsType) }
             var snsId by remember { mutableStateOf(data.snsId) }
             Column {
+                Spacer(modifier = Modifier.size(8.dp))
                 TextField(
                     value = snsType,
                     onValueChange = {
                         snsType = it
                         typeValueChange.invoke(it)
                     },
-                    label = { Text("SNS type")}
+                    label = { Text(
+                        text = "SNS type",
+                        color = Brown
+                    )},
+                    shape = AbsoluteRoundedCornerShape(
+                        topLeft = 20.dp,
+                        topRight = 20.dp,
+                        bottomLeft = 0.dp,
+                        bottomRight = 0.dp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f),
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = Color.Black, // テキストの色
+                        containerColor = Color.White, // 背景色
+                        cursorColor = Color.Black, // カーソルの色
+                        focusedIndicatorColor = Color.Transparent, // フォーカス時のインジケータの色
+                        unfocusedIndicatorColor = Color.Transparent, // 非フォーカス時のインジケータの色
+                        disabledIndicatorColor = Color.Transparent // 非アクティブ時のインジケータの色
+                    )
                 )
                 TextField(
                     value = snsId,
@@ -279,7 +335,26 @@ class BreadcrumbList {
                         snsId = it
                         idValueChange.invoke(it)
                     },
-                    label = { Text("SNS id")}
+                    label = { Text(
+                        text = "SNS id",
+                        color = Brown
+                    )},
+                    shape = AbsoluteRoundedCornerShape(
+                        topLeft = 0.dp,
+                        topRight = 0.dp,
+                        bottomLeft = 20.dp,
+                        bottomRight = 20.dp
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f),
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = Color.Black, // テキストの色
+                        containerColor = Color.White, // 背景色
+                        cursorColor = Color.Black, // カーソルの色
+                        focusedIndicatorColor = Color.Transparent, // フォーカス時のインジケータの色
+                        unfocusedIndicatorColor = Color.Transparent, // 非フォーカス時のインジケータの色
+                        disabledIndicatorColor = Color.Transparent // 非アクティブ時のインジケータの色
+                    )
                 )
             }
         }

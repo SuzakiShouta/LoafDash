@@ -15,7 +15,7 @@ class NoDataView {
         fun NoData() {
             Text(
                 text = "携帯を口に咥えて走ろう！",
-                color = Color.Blue,
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
             )

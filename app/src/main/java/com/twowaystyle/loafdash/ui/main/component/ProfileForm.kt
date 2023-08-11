@@ -101,7 +101,7 @@ class ProfileForm {
                         snsType = it
                         typeValueChange.invoke(it)
                     },
-                    label = { Text("SNS type")}
+                    label = { Text("SNS type")},
                 )
                 TextField(
                     value = snsId,

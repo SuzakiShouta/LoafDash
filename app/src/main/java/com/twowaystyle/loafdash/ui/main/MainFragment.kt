@@ -57,6 +57,7 @@ class MainFragment : Fragment() {
             setContent {
                 val breadcrumbs = app.keepUsersList.observeAsState()
                 val profileExpand by remember { app.profileUiExpand }
+                app.saveProfile()
                 LoafDashTheme{
                     Surface(
                         modifier = Modifier.fillMaxSize(),
