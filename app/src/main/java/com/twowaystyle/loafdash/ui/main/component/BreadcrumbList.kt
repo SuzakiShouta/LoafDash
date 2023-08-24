@@ -18,9 +18,12 @@ import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -280,11 +283,25 @@ class BreadcrumbList {
                 }
 
                 item{
-                    Button(onClick = {
-                        snsList.add(SNSProperty("", ""))
-                        Log.d(javaClass.name, snsList.toString())
-                    }) {
-                        Text("add")
+                    Button(
+                        modifier = Modifier
+                            .size(64.dp) // ボタンのサイズを指定
+                            .clip(CircleShape), // 角丸ではなく完全な円にする
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown, // ボタンの背景色
+                            contentColor = Color.White // ボタン内のテキストとアイコンの色
+                        ),
+                        onClick = {
+                            snsList.add(SNSProperty("", ""))
+                            Log.d(javaClass.name, snsList.toString())
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add, // アイコンの追加
+                            contentDescription = "",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp) // アイコンのサイズを指定
+                        )
                     }
                 }
             }

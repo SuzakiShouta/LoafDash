@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,7 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +31,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -107,29 +113,36 @@ class MainFragment : Fragment() {
                             }
                             Button(
                                 modifier = Modifier
-                                    .size(70.dp)
+                                    .size(90.dp)
                                     .constrainAs(button) {
-                                        bottom.linkTo(parent.bottom, margin = 8.dp)
-                                        end.linkTo(parent.end, margin = 8.dp)
+                                        bottom.linkTo(parent.bottom, margin = 24.dp)
+                                        end.linkTo(parent.end, margin = 24.dp)
                                     },
+                                border = BorderStroke(
+                                    width = 5.dp,
+                                    color = Brown
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Beige, // ボタンの背景色
+                                ),
                                 onClick = {
                                     app.profileUiExpand.value = !app.profileUiExpand.value
                                 }) {
                                 when (profileExpand) {
                                     true -> {
-                                        Image(
-                                            Icons.Default.ArrowBack,
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowBack,
                                             contentDescription = "",
-                                            contentScale = ContentScale.Fit,
-                                            modifier = Modifier.wrapContentSize()
+                                            tint = Brown, // アイコンの色を変数Brownに設定
+                                            modifier = Modifier.size(40.dp) // アイコンのサイズを変更
                                         )
                                     }
                                     false -> {
-                                        Image(
-                                            Icons.Default.ArrowDropDown,
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
                                             contentDescription = "",
-                                            contentScale = ContentScale.Fit,
-                                            modifier = Modifier.wrapContentSize()
+                                            tint = Brown, // アイコンの色を変数Brownに設定
+                                            modifier = Modifier.size(40.dp) // アイコンのサイズを変更
                                         )
                                     }
                                 }

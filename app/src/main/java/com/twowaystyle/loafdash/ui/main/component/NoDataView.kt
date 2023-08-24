@@ -14,7 +14,7 @@ class NoDataView {
         @Composable
         fun NoData() {
             Text(
-                text = "携帯を口に咥えて走ろう！",
+                text = "保存したパンくずは\nここで確認できるぞ！",
                 color = Color.Black,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
